@@ -1,0 +1,425 @@
+{
+  "generated_utc": "2026-07-14T15:34:11.117945+00:00",
+  "root": "C:\\Users\\Ahmed\\OneDrive\\Desktop\\try for 5.5",
+  "python": "C:\\Users\\Ahmed\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\python.exe",
+  "python_version": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "seed": 2026,
+  "report": "results\\perception_logs\\day7_thesis_package\\thesis_perception_summary_report.txt",
+  "metrics_table": "results/perception_logs/day7_thesis_package/perception_metrics_table.csv",
+  "runtime_profile": "results/perception_logs/day7_thesis_package/runtime_profile.csv",
+  "artifact_manifest": "results/perception_logs/day7_thesis_package/artifact_manifest.csv",
+  "figures_manifest": "results/perception_logs/day7_thesis_package/figures_manifest.csv",
+  "artifacts": [
+    {
+      "path": "configs/perception_config.m",
+      "exists": true,
+      "size_bytes": 3864,
+      "sha256": "3003bbf77f0e3a67ea56ec6c002c9289d4484cbd7b92f14e99a7823ecb0b9920"
+    },
+    {
+      "path": "configs/classes.json",
+      "exists": true,
+      "size_bytes": 576,
+      "sha256": "f8c36e51e2fdfe2c0aec322752b7d0a4d5fe0819b20f06224f5397b895a2cb1c"
+    },
+    {
+      "path": "perception/camera_simulator.m",
+      "exists": true,
+      "size_bytes": 2399,
+      "sha256": "8fcfaae3943920e2791fb7e2fc78d12ad84bedc1b9ba2d0f6f86eeee4265b4e5"
+    },
+    {
+      "path": "perception/render_field.m",
+      "exists": true,
+      "size_bytes": 5154,
+      "sha256": "e5f891224977fc0482581fc1a9fb1e9f8f4a81e74912d3d7db9d4cec61e05180"
+    },
+    {
+      "path": "perception/run_perception_loop.m",
+      "exists": true,
+      "size_bytes": 6069,
+      "sha256": "cb64da5de62a2933e954bfc9e39e8cce04abab4502de54ef3316793db1dbd37a"
+    },
+    {
+      "path": "perception/onnx_worker.m",
+      "exists": true,
+      "size_bytes": 5385,
+      "sha256": "cb853d554a8c61c3d1ca91f752b23c6a09681e6f8770f79ce664f19122d8d5b2"
+    },
+    {
+      "path": "perception/controller_adapter.m",
+      "exists": true,
+      "size_bytes": 3852,
+      "sha256": "e0766c9c2ddd94cea5987ad414f509a726341f84f9b53654962aa92e47179c32"
+    },
+    {
+      "path": "mapping/pixel_to_world.m",
+      "exists": true,
+      "size_bytes": 1225,
+      "sha256": "e1a16e7f6f3ba0e053f83a535c44284e420122ba6d31e59b2009b872b43fd1ce"
+    },
+    {
+      "path": "mapping/treatment_map.m",
+      "exists": true,
+      "size_bytes": 5312,
+      "sha256": "d33556157b799cd5ca9e9d00a676a88b5b43e9bbd4f757b9ddd45ceea37b9fd1"
+    },
+    {
+      "path": "replanner/revisit_planner.m",
+      "exists": true,
+      "size_bytes": 5244,
+      "sha256": "23066ab2054caaf668abd61d1deceb174a31f3ab10b26293f64f85610fa83391"
+    },
+    {
+      "path": "replanner/spray_executor.m",
+      "exists": true,
+      "size_bytes": 4130,
+      "sha256": "5a6a0e27f259de5c5178b9dcae2676ca1601ae9ae69ef1f609d43e8605c7e793"
+    },
+    {
+      "path": "analysis/perception_metrics.m",
+      "exists": true,
+      "size_bytes": 12135,
+      "sha256": "70665d91a91efa1c9697be1713d0753b6f514a28684103607bf58f0ed2a24ace"
+    },
+    {
+      "path": "analysis/plot_latency_comparison.m",
+      "exists": true,
+      "size_bytes": 1344,
+      "sha256": "cdbeb4d96256d5f0675d630438f13f86f26880e488d7630e28e97783c24fc667"
+    },
+    {
+      "path": "analysis/plot_pid_footprint_diagnostic.m",
+      "exists": true,
+      "size_bytes": 3972,
+      "sha256": "86fb8b0386f36b0712928180f70fa625b4f473c2b2885f2b870a1896bd995c99"
+    },
+    {
+      "path": "controllers/controller_PID.m",
+      "exists": true,
+      "size_bytes": 2088,
+      "sha256": "3d2c7a1ca504ba04b34cec42b044932c9f4b067d463ddbdf36e34b94a110da07"
+    },
+    {
+      "path": "controllers/controller_PID_compute.m",
+      "exists": true,
+      "size_bytes": 4968,
+      "sha256": "a90918b243ca3f0b49d6ca2ad056872df46ca4087635f731dbc7f9e06d6a949f"
+    },
+    {
+      "path": "controllers/controller_LQR.m",
+      "exists": true,
+      "size_bytes": 2838,
+      "sha256": "a3df15f7186dba2161c1bc69f671941fa2198f10ec2a017ce74442354ba80079"
+    },
+    {
+      "path": "controllers/controller_LQR_compute.m",
+      "exists": true,
+      "size_bytes": 2638,
+      "sha256": "2c44c0439f7bda87428dcf2e3a2d45282e26e30c07ee15fd16255fc2947ffa7f"
+    },
+    {
+      "path": "controllers/controller_Hinf.m",
+      "exists": true,
+      "size_bytes": 5338,
+      "sha256": "8172e96fa015944316d023d625ac513eeaa3ec200152d1c5db7ed9bcf90a5b59"
+    },
+    {
+      "path": "controllers/controller_Hinf_compute.m",
+      "exists": true,
+      "size_bytes": 3848,
+      "sha256": "89e6157fb7493bb18547a6eaadbd19e6c207440af32df72f26d00364ea92d3c5"
+    },
+    {
+      "path": "controllers/controller_MPC.m",
+      "exists": true,
+      "size_bytes": 4321,
+      "sha256": "5a0b14b2d2afc5dd4f751506e35ce479765374d1fea25da1df8597f959594e1b"
+    },
+    {
+      "path": "controllers/controller_MPC_compute.m",
+      "exists": true,
+      "size_bytes": 5283,
+      "sha256": "20d4ebc917d3e7348076304c7b893cbcf84f9fddecd375e3e24e159a610fa070"
+    },
+    {
+      "path": "controllers/controller_SMC.m",
+      "exists": true,
+      "size_bytes": 3070,
+      "sha256": "6cc8a64155da88f6cc55d792d482bd5351c921dcc0ae41c8a6d96671eb3ece1a"
+    },
+    {
+      "path": "controllers/controller_SMC_compute.m",
+      "exists": true,
+      "size_bytes": 6842,
+      "sha256": "cdb969ec5abf554815ff6ce5de233a2e548e4610c84b84c0bfdf9cc610f61c26"
+    },
+    {
+      "path": "controllers/controller_options_verbose.m",
+      "exists": true,
+      "size_bytes": 290,
+      "sha256": "3ecb1d0f5800ee085a2ac7806cb68f16f2331bba35864cd62241afa2815e6636"
+    },
+    {
+      "path": "controllers/compute_trajectory_feedforward.m",
+      "exists": true,
+      "size_bytes": 1622,
+      "sha256": "e15bfc624f3e2660cec1ffe7700e3e2a51058e499123bd8b82147d4f20cefa6a"
+    },
+    {
+      "path": "controllers/quadrotor_flatness_from_acceleration.m",
+      "exists": true,
+      "size_bytes": 4533,
+      "sha256": "505b2e913b1ed79f86a8bfe6f389c8d8b778121f05c46c5485b246c43b365444"
+    },
+    {
+      "path": "controllers/trajectory_feedforward_options.m",
+      "exists": true,
+      "size_bytes": 975,
+      "sha256": "d3a891d5ea9a631f62988d87bb049af34f543d5887cb36e373d0e30be1539420"
+    },
+    {
+      "path": "dynamics/quadrotor_dynamics_step.m",
+      "exists": true,
+      "size_bytes": 6818,
+      "sha256": "0daec8d89f44e022984a28f41ca5625577b9c9830cc1be1d1f364b318aa19ab5"
+    },
+    {
+      "path": "trajectories/generate_agricultural_trajectory.m",
+      "exists": true,
+      "size_bytes": 2422,
+      "sha256": "f1475f6529919af9dd20a184d0b5f96dd26e1cbd992f59632ad21a61a0b3ca14"
+    },
+    {
+      "path": "trajectories/generate_circular_trajectory.m",
+      "exists": true,
+      "size_bytes": 1738,
+      "sha256": "d51f2bab49d1636eb91a1f2840d1456dfa8e122688167056e36c137480a6e9cc"
+    },
+    {
+      "path": "deep_learning/train.py",
+      "exists": true,
+      "size_bytes": 13230,
+      "sha256": "d1deebcf75ff7a6691c85c6ff7400327d663df541448e3300223231c5a27e39d"
+    },
+    {
+      "path": "deep_learning/infer.py",
+      "exists": true,
+      "size_bytes": 3015,
+      "sha256": "ea98e782313994f514cfb2eee3108379cf8363462acaeade680e3be408fd1957"
+    },
+    {
+      "path": "deep_learning/export_onnx.py",
+      "exists": true,
+      "size_bytes": 1753,
+      "sha256": "1aea3a139ac5b11bbee2adf1871e61bfc848a8b7ebce95cbd96c96a5cd37c3e9"
+    },
+    {
+      "path": "deep_learning/av_field_flyover.py",
+      "exists": true,
+      "size_bytes": 11977,
+      "sha256": "67780a58dea131c9864fa40eca76b379e6741ed02f93facc345a47b78ebf3bc4"
+    },
+    {
+      "path": "deep_learning/plot_training_curves.py",
+      "exists": true,
+      "size_bytes": 3021,
+      "sha256": "a1850c688d4e965501b6e13ab1302d65f1c1b711b2d86d5739d657ad0a5a5d9f"
+    },
+    {
+      "path": "deep_learning/requirements.txt",
+      "exists": true,
+      "size_bytes": 229,
+      "sha256": "770809505b9ca40e2140e774f3e854164114c668efa8f8c56fbc1004514986a3"
+    },
+    {
+      "path": "deep_learning/weights/av_segmentation_2020_best.pt",
+      "exists": true,
+      "size_bytes": 57427211,
+      "sha256": "19e12f4aac46fb795fde3e1a796719dae5a53e70ed3cf7d03ce4b4d6452888c6"
+    },
+    {
+      "path": "deep_learning/weights/av_segmentation_2020.onnx",
+      "exists": true,
+      "size_bytes": 57309495,
+      "sha256": "5058358e4b98fc12e974307a74d2b2e12aacf8cacf13c729a4229fe68a63d2f2"
+    },
+    {
+      "path": "deep_learning/weights/training_log_2020.json",
+      "exists": true,
+      "size_bytes": 27095,
+      "sha256": "ea27281e755a4515a630499cb5ba09b512580f8690274e58964c74bf62d98d40"
+    },
+    {
+      "path": "deep_learning/weights/test_metrics_2020.json",
+      "exists": true,
+      "size_bytes": 981,
+      "sha256": "667e7db64455600b45e8a274a8030c37e9866639055a239642ffdf3388784ecc"
+    },
+    {
+      "path": "datasets/real_field/field_texture.png",
+      "exists": true,
+      "size_bytes": 7842918,
+      "sha256": "d612e920334317feac87217a5607e8edf5ef3eac572f9487910483b56f21c240"
+    },
+    {
+      "path": "datasets/real_field/field_mask.png",
+      "exists": true,
+      "size_bytes": 17417,
+      "sha256": "9fa9fbae4c851bf046d88324412a50ea6095a45d5b3112761210ce9c527c1c70"
+    },
+    {
+      "path": "results/analysis/flyover/flyover_report.json",
+      "exists": true,
+      "size_bytes": 2951,
+      "sha256": "9a22353d6547262695597a181b1ee6c40168a4f3ee706bc21e92874a1ff92a1c"
+    },
+    {
+      "path": "scripts/day2_perception_capture_demo.m",
+      "exists": true,
+      "size_bytes": 6863,
+      "sha256": "12c0d8c5eb9e3ccf0de608d5a3899b28c4d9f9817f775785abc742d2d3a32093"
+    },
+    {
+      "path": "scripts/day3_deep_learning_pipeline.py",
+      "exists": true,
+      "size_bytes": 6153,
+      "sha256": "38e1dd7b75d8ac53bd72e064bad7a48ff850bcb29bad43d6f45aadc7849ac866"
+    },
+    {
+      "path": "scripts/day4_perception_mapping_demo.m",
+      "exists": true,
+      "size_bytes": 10862,
+      "sha256": "ef81ac9dd49fb978bc622c597938044e3cd76df568e6739ab80da08cb6b52536"
+    },
+    {
+      "path": "scripts/day5_revisit_spray_demo.m",
+      "exists": true,
+      "size_bytes": 8824,
+      "sha256": "f9b5cdf85bf6ca57660a6318f661c9a92416d89b15363d50959182db29b1b376"
+    },
+    {
+      "path": "scripts/day6_controller_comparison_demo.m",
+      "exists": true,
+      "size_bytes": 1117,
+      "sha256": "32c960fefbd11b55740428d9525fb2190cb8612946f0483a9e00d4d63783cfbb"
+    },
+    {
+      "path": "scripts/day6_controller_comparison_circular.m",
+      "exists": true,
+      "size_bytes": 1104,
+      "sha256": "362ad92adeb809de98ed4c2c517cb931b7c766da6f3c497270f319160e83b7e3"
+    },
+    {
+      "path": "scripts/perception_monte_carlo.m",
+      "exists": true,
+      "size_bytes": 6926,
+      "sha256": "9cf2396ae3b78dc482d651b387d0584a04bfbd531fced7601d35fcbda03546f8"
+    },
+    {
+      "path": "results/perception_logs/monte_carlo/summary.csv",
+      "exists": true,
+      "size_bytes": 1325,
+      "sha256": "eb1302ed05f27f3f6acc5e1c5608e7451cba106a80d977db6093675f6cd907d9"
+    },
+    {
+      "path": "main_comparison_with_perception.m",
+      "exists": true,
+      "size_bytes": 26968,
+      "sha256": "132d089d441717f601852a02f634fc8a53ee68a8ab19a637dd0e1c5e40a4ade0"
+    }
+  ],
+  "figures": [
+    {
+      "figure": "results/figures/latency_comparison.png",
+      "exists": true,
+      "size_bytes": 38278
+    },
+    {
+      "figure": "results/figures/detection_overlay_agricultural_PID.png",
+      "exists": true,
+      "size_bytes": 931058
+    },
+    {
+      "figure": "results/figures/detection_overlay_agricultural_LQR.png",
+      "exists": true,
+      "size_bytes": 932402
+    },
+    {
+      "figure": "results/figures/detection_overlay_agricultural_Hinf.png",
+      "exists": true,
+      "size_bytes": 925237
+    },
+    {
+      "figure": "results/figures/detection_overlay_agricultural_MPC.png",
+      "exists": true,
+      "size_bytes": 929420
+    },
+    {
+      "figure": "results/figures/detection_overlay_agricultural_SMC.png",
+      "exists": true,
+      "size_bytes": 923169
+    },
+    {
+      "figure": "results/figures/treatment_map_agricultural_PID.png",
+      "exists": true,
+      "size_bytes": 33101
+    },
+    {
+      "figure": "results/figures/treatment_map_agricultural_LQR.png",
+      "exists": true,
+      "size_bytes": 32959
+    },
+    {
+      "figure": "results/figures/treatment_map_agricultural_Hinf.png",
+      "exists": true,
+      "size_bytes": 32954
+    },
+    {
+      "figure": "results/figures/treatment_map_agricultural_MPC.png",
+      "exists": true,
+      "size_bytes": 32978
+    },
+    {
+      "figure": "results/figures/treatment_map_agricultural_SMC.png",
+      "exists": true,
+      "size_bytes": 32977
+    },
+    {
+      "figure": "results/perception_logs/day4_mapping_PID/day4_treatment_map.png",
+      "exists": true,
+      "size_bytes": 38381
+    },
+    {
+      "figure": "results/perception_logs/day5_revisit_PID/day5_revisit_plan.png",
+      "exists": true,
+      "size_bytes": 42076
+    },
+    {
+      "figure": "results/perception_logs/day5_revisit_PID/day5_latency_comparison.png",
+      "exists": true,
+      "size_bytes": 39694
+    },
+    {
+      "figure": "results/perception_logs/day6_controller_comparison/day6_latency_comparison.png",
+      "exists": true,
+      "size_bytes": 42232
+    },
+    {
+      "figure": "results/perception_logs/day6_circular/day6_latency_comparison.png",
+      "exists": true,
+      "size_bytes": 43893
+    },
+    {
+      "figure": "results/perception_logs/day7_thesis_package/training_curves.png",
+      "exists": true,
+      "size_bytes": 190997
+    },
+    {
+      "figure": "results/perception_logs/day6_controller_comparison/day6_zone_count_comparison.png",
+      "exists": true,
+      "size_bytes": 32095
+    }
+  ]
+}

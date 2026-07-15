@@ -1,0 +1,2 @@
+controller,coverage_percent,affected_zone_recall,false_alarm_rate_per_m2,mean_latency_s,median_latency_s,max_latency_s,missed_zones,mean_inference_time_ms,p95_inference_time_ms
+real_field,95,1,0.0566666666666667,NaN,NaN,NaN,0,NaN,NaN

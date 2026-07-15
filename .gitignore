@@ -1,0 +1,46 @@
+# ==========================================================================
+# Perception-Aware UAV Control — repository ignore rules
+#
+# This project also contains ~24 GB of large, regenerable artifacts that are
+# intentionally NOT tracked in git (they exceed GitHub limits):
+#   - results/  simulation frames, pose logs, per-run .mat outputs (~22 GB)
+#   - datasets/ raw Agriculture-Vision imagery (~1.5 GB)
+#   - deep_learning/weights/*.pt and *.onnx  trained model binaries (~600 MB)
+# See README for how to regenerate/download them.
+# ==========================================================================
+
+# ---- Python ----
+__pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/
+
+# ---- LaTeX build artifacts ----
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# ---- Office temp / lock files ----
+~$*
+
+# ---- Trained model binaries (large; not stored in git) ----
+*.pt
+*.onnx
+
+# ---- Simulation run artifacts (large / regenerable) ----
+*.mat
+results/**/frames/
+results/perception_logs/blocker_check*/
+
+# ---- Large raw / generated datasets (regenerable; not stored in git) ----
+datasets/synthetic/
+datasets/real/
+
+# ---- OS junk ----
+.DS_Store
+Thumbs.db
+desktop.ini

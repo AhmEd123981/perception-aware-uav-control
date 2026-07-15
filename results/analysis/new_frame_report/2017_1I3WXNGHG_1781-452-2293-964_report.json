@@ -1,0 +1,12 @@
+{
+  "coverage_percent": {
+    "healthy": 77.55,
+    "drydown": 0.0,
+    "weed_cluster": 22.45,
+    "double_plant": 0.0
+  },
+  "problems": {
+    "weed_cluster": 22.45
+  },
+  "main_problem": "weed_cluster"
+}

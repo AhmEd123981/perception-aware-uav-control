@@ -1,0 +1,132 @@
+Perception-Aware Agricultural Quadrotor Thesis Package
+Generated: 2026-07-14T15:34:11.108944+00:00
+
+Updated Abstract
+This thesis extends the comparative evaluation of PID, LQR, H-infinity, MPC, and sliding-mode control for agricultural quadrotor UAVs with an opt-in perception and decision layer for precision spraying. A downward-facing RGB camera simulator captures imagery of a REAL Agriculture-Vision (CVPR-2020) field during flight; a U-Net (ResNet-18 encoder) semantic segmentation model trained on the Agriculture-Vision dataset labels each pixel as background, drydown, weed cluster, or double plant; and affected pixels (drydown, weed cluster, double plant) are projected into a world-frame treatment map using camera intrinsics and UAV pose. After coverage, connected affected zones are revisited with a nearest-neighbour planner and spray events are logged to compute detection-to-treatment latency. Detections are scored against the field's real ground-truth mask. The framework evaluates controller performance jointly with agricultural task metrics: affected-zone recall, detection-to-treatment latency, coverage, and inference runtime.
+
+Research Contributions
+1. Unified perception-aware comparison of PID, LQR, H-infinity, MPC, and SMC under an agricultural UAV scenario.
+2. Real Agriculture-Vision (CVPR-2020) crop segmentation pipeline connected to MATLAB flight simulation and scored against a real ground-truth field mask.
+3. Pixel-to-world treatment-map feedback loop for affected-zone revisit planning.
+4. Joint control/perception metrics: affected-zone recall, detection-to-treatment latency, coverage, and runtime.
+
+Deep-Learning Summary (Agriculture-Vision CVPR-2020, real data)
+Dataset: Agriculture-Vision CVPR-2020 miniscale (2017+2018+2019).
+Train/val/test patches: 4500 / 900 / 900 (512x512 RGB).
+Classes: background, drydown, weed_cluster, double_plant.
+Affected (map/spray) classes: drydown, weed_cluster, double_plant (MATLAB ids [2 3 4]).
+Architecture: U-Net with ResNet-18 encoder (opset-17 ONNX).
+Training epochs logged: 25
+Best validation mIoU: 0.4475 (epoch 24)
+Latest validation mIoU: 0.4274 (epoch 25)
+Latest train loss: 0.5355
+Held-out TEST mIoU: 0.4050
+
+Per-class held-out test metrics:
+Class | Test IoU | Precision | Recall
+---|---:|---:|---:
+background | 0.812 | 0.896 | 0.896
+drydown | 0.422 | 0.619 | 0.570
+weed_cluster | 0.206 | 0.338 | 0.346
+double_plant | 0.180 | 0.300 | 0.310
+
+ONNX model: deep_learning/weights/av_segmentation_2020.onnx
+Real-field flyover evidence (whole-field fused vs GT): results/analysis/flyover/flyover_report.json
+
+Controller Perception Metrics
+Controller | Coverage % | Recall | Mean Latency s | Median Latency s | Max Latency s | Missed Zones
+---|---:|---:|---:|---:|---:|---:
+PID | 100.00 | 1.00 | 104.66 | 106.81 | 117.93 | 0
+LQR | 56.38 | 0.50 | 102.47 | 101.33 | 137.41 | 1
+Hinf | 62.42 | 0.50 | 91.05 | 90.89 | 131.75 | 1
+MPC | 88.21 | 1.00 | 96.59 | 101.01 | 139.70 | 0
+SMC | 100.00 | 1.00 | 101.86 | 87.00 | 139.15 | 0
+
+Runtime Profile
+Controller | Mean ONNX Inference Time ms
+---|---:
+PID | 82.17
+LQR | 84.35
+Hinf | 82.20
+MPC | 81.22
+SMC | 81.15
+
+Day 4 Mapping Evidence
+Day 4 perception mapping summary
+Controller: PID_nominal_day4
+Trajectory: agricultural_lawnmower_day4
+Duration: 24.00 s
+Camera FPS: 5.00
+Captured frames: 121
+Mean inference time: 1626.35 ms
+Max inference time: 4168.26 ms
+Total affected pixels: 770105
+Total projected pixels: 770105
+Active treatment cells: 108
+Detected zones: 3
+Zone 1 centroid: [4.49, 3.01], area 2.69 m^2
+Zone 2 centroid: [5.81, 1.01], area 1.88 m^2
+Zone 3 centroid: [10.47, 1.10], area 2.19 m^2
+
+
+Day 5 Revisit Evidence
+Day 5 revisit and spray summary
+Controller: PID_nominal_day5
+Phase 1 duration: 24.00 s
+Revisit duration: 13.08 s
+Revisit path length: 10.08 m
+Planned zones: 3
+Sprayed zones: 3
+Missed zones: 0
+Zone order: [1 2 3]
+Mean latency: 23.80 s
+Median latency: 29.41 s
+Max latency: 31.25 s
+Spray radius: 0.40 m
+Spray dwell: 1.00 s
+Event 1: zone 1 at 27.34 s, latency 10.74 s, position [4.49 3.01 4.00]
+Event 2: zone 2 at 30.81 s, latency 29.41 s, position [5.81 1.01 4.00]
+Event 3: zone 3 at 36.25 s, latency 31.25 s, position [10.47 1.10 4.00]
+
+
+Day 6 Five-Controller Evidence
+Full perception integration summary
+Trajectory: agricultural
+Camera FPS: 5.00
+Treatment grid: 0.25 m cells over 15.0 m x 10.0 m
+Trajectory function: generate_agricultural_trajectory
+Feedforward function: compute_trajectory_feedforward
+Dynamics function: quadrotor_dynamics_step
+Controller files called:
+  PID: controllers\controller_PID.m, controllers\controller_PID_compute.m
+  LQR: controllers\controller_LQR.m, controllers\controller_LQR_compute.m
+  Hinf: controllers\controller_Hinf.m, controllers\controller_Hinf_compute.m
+  MPC: controllers\controller_MPC.m, controllers\controller_MPC_compute.m
+  SMC: controllers\controller_SMC.m, controllers\controller_SMC_compute.m
+
+Controller metrics:
+PID | coverage 100.00 % | recall 1.000 | false alarm 0.13667 m2/m2 | mean latency 104.66 s | mean inference 82.17 ms
+LQR | coverage 56.38 % | recall 0.500 | false alarm 0.14667 m2/m2 | mean latency 102.47 s | mean inference 84.35 ms
+Hinf | coverage 62.42 % | recall 0.500 | false alarm 0.10458 m2/m2 | mean latency 91.05 s | mean inference 82.20 ms
+MPC | coverage 88.21 % | recall 1.000 | false alarm 0.08250 m2/m2 | mean latency 96.59 s | mean inference 81.22 ms
+SMC | coverage 100.00 % | recall 1.000 | false alarm 0.12250 m2/m2 | mean latency 101.86 s | mean inference 81.15 ms
+
+
+Risk Discussion and Mitigations
+Real-data accuracy claim: The canonical model is the real Agriculture-Vision 2020 U-Net (held-out test mIoU 0.4050). Whole-field fused metrics over the stitched real field (results/analysis/flyover/flyover_report.json) are reported honestly and are lower than per-patch test mIoU because survey windows straddle patch boundaries; this is the expected simulation-to-field gap, not a bug.
+MATLAB-Python bridge latency: Per-frame process startup has been replaced by a persistent ONNX Runtime worker. Report inference timing after discarding the first three warm-up frames, and keep camera inference below the control-rate budget for deployment claims.
+ONNX compatibility: The exported U-Net uses opset 17 and ONNX Runtime successfully. If MATLAB Deep Learning Toolbox import is later used, keep the ONNX Runtime path as the fallback.
+Camera simulation fidelity: The renderer intersects camera rays with the flat field plane and samples a real Agriculture-Vision orthomosaic; plant geometry and lighting are still simplified, so field-deployment claims require on-board validation flights.
+Metric interpretation: The full-integration Day 6 path calls the real controller initialisation and compute API directly through main_comparison_with_perception.m. The five controllers are initialised via controller_adapter("init", ...) and stepped via controller_adapter("compute", ...); the implementations live in controllers/controller_{PID,LQR,Hinf,MPC,SMC}*.m.
+
+Reproducibility Freeze
+Random seed: 2026
+Camera: 1280x720, 60 degree horizontal FOV, 5 Hz
+Treatment grid: 0.25 m cells over 15 m x 10 m
+Classes: background, drydown, weed_cluster, double_plant (Agriculture-Vision CVPR-2020)
+Affected classes (MATLAB ids): [2 3 4]
+Model checkpoint: deep_learning/weights/av_segmentation_2020_best.pt
+ONNX export: deep_learning/weights/av_segmentation_2020.onnx
+Real field + GT mask: datasets/real_field/field_texture.png, datasets/real_field/field_mask.png
+Held-out test mIoU: 0.4050
+Artifact hashes: see reproducibility_manifest.json and artifact_manifest.csv

@@ -1,0 +1,10 @@
+{
+  "scheme": "agriculture_vision_2020",
+  "note": "Real Agriculture-Vision CVPR-2020 4-class scheme. Python/model ids are 0-based; MATLAB ids add 1. Affected (map+spray) classes are drydown/weed_cluster/double_plant -> MATLAB ids [2 3 4].",
+  "classes": [
+    {"id_matlab": 1, "id_python": 0, "name": "background", "affected": false},
+    {"id_matlab": 2, "id_python": 1, "name": "drydown", "affected": true},
+    {"id_matlab": 3, "id_python": 2, "name": "weed_cluster", "affected": true},
+    {"id_matlab": 4, "id_python": 3, "name": "double_plant", "affected": true}
+  ]
+}

@@ -1,0 +1,17 @@
+Day 5 revisit and spray summary
+Controller: PID_nominal_day5
+Phase 1 duration: 24.00 s
+Revisit duration: 13.08 s
+Revisit path length: 10.08 m
+Planned zones: 3
+Sprayed zones: 3
+Missed zones: 0
+Zone order: [1 2 3]
+Mean latency: 23.80 s
+Median latency: 29.41 s
+Max latency: 31.25 s
+Spray radius: 0.40 m
+Spray dwell: 1.00 s
+Event 1: zone 1 at 27.34 s, latency 10.74 s, position [4.49 3.01 4.00]
+Event 2: zone 2 at 30.81 s, latency 29.41 s, position [5.81 1.01 4.00]
+Event 3: zone 3 at 36.25 s, latency 31.25 s, position [10.47 1.10 4.00]

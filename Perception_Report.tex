@@ -1,0 +1,1062 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{amsmath,amssymb,amsfonts,bm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{titlesec}
+\usepackage{lmodern}
+\usepackage{indentfirst}
+
+\geometry{margin=1in}
+\setstretch{1.15}
+\setlength{\parindent}{1.25cm}
+\setlength{\parskip}{0pt}
+\setlist[itemize]{leftmargin=2em}
+\hypersetup{hidelinks}
+
+% Resolve figures directly from the analysis outputs of the project.
+\graphicspath{%
+    {results/analysis/}%
+    {results/analysis/flyover/}%
+    {results/analysis/av_predictions_2020/}%
+    {results/perception_logs/day7_thesis_package/}%
+}
+
+% Figure command: #1 image (resolved via \graphicspath), #2 caption, #3 small
+% description, #4 label. \includegraphics searches \graphicspath, so the figures
+% in results/analysis and its subfolders resolve from the project root.
+\newcommand{\figorbox}[4]{%
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.90\textwidth]{#1}
+        \caption{#2\\\small #3}\label{#4}
+    \end{figure}
+    \vspace{0.3em}
+}
+
+\begin{document}
+
+\hypersetup{pageanchor=false}
+\begin{titlepage}
+    \thispagestyle{empty}
+    \begin{center}
+        \vspace*{1.45cm}
+
+        {\large THE MINISTRY OF SCIENCE AND HIGHER EDUCATION\par}
+        \vspace{0.22cm}
+        {\large OF THE RUSSIAN FEDERATION\par}
+
+        \vspace{1.25cm}
+
+        {\large ITMO University\par}
+        \vspace{0.18cm}
+        {\large (ITMO)\par}
+
+        \vspace{0.85cm}
+
+        {\large International Research and Educational Center\par}
+        \vspace{0.18cm}
+        {\large for Physics of Nanostructures\par}
+
+        \vspace{2.35cm}
+
+        {\Large SYNOPSIS\par}
+
+        \vspace{0.42cm}
+
+        {\large for the subject\par}
+        \vspace{0.18cm}
+        {\large ``\textit{Research Internship}''\par}
+
+        \vspace{0.56cm}
+
+        {\large on the topic:\par}
+        \vspace{0.22cm}
+        \makebox[\textwidth][c]{{\large A PERCEPTION-AWARE CONTROL FRAMEWORK}}\par
+        \vspace{0.12cm}
+        \makebox[\textwidth][c]{{\large FOR AGRICULTURAL QUADROTOR UAVs:}}\par
+        \vspace{0.12cm}
+        \makebox[\textwidth][c]{{\large DEEP-LEARNING CROP-ANOMALY SEGMENTATION}}\par
+        \vspace{0.12cm}
+        \makebox[\textwidth][c]{{\large AND TREATMENT MAPPING}}\par
+    \end{center}
+
+    \vfill
+
+    \noindent
+    \begin{minipage}[t]{0.36\textwidth}
+        \raggedright
+        {\large\textbf{Student:}\par}
+        \vspace{0.18cm}
+        {\large\textit{Group No.\ 465672}\par}
+
+        \vspace{0.48cm}
+
+        {\large\textbf{Program:}\par}
+
+        \vspace{0.62cm}
+
+        {\large\textbf{Tutor:}\par}
+        \vspace{0.18cm}
+        {\large\textit{Associate professor}\par}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.46\textwidth}
+        \raggedleft
+        {\large\textit{Gouda, Ahmed Ashraf}\par}
+
+        \vspace{1.10cm}
+
+        {\large\textit{MSc Mechatronics and Robotics}\par}
+
+        \vspace{0.95cm}
+
+        {\large\textit{Vlasov Sergey Mikhaylovich}\par}
+    \end{minipage}
+
+    \vfill
+
+    \begin{center}
+        {\large Saint Petersburg -- 2026\par}
+    \end{center}
+\end{titlepage}
+\hypersetup{pageanchor=true}
+
+\tableofcontents
+\clearpage
+
+\section*{Abstract}
+\addcontentsline{toc}{section}{ABSTRACT}
+This work extends a five-controller comparative study for agricultural quadrotor
+UAVs (PID, LQR, $H_\infty$, MPC, and SMC) with an opt-in perception-and-decision
+layer for precision spraying, and evaluates the five controllers jointly with the
+agricultural task they must serve. A downward-facing RGB camera is simulated
+during flight; a U-Net (ResNet-18 encoder) semantic segmentation network, trained
+on the real \emph{Agriculture-Vision} CVPR-2020 dataset, labels each captured pixel
+as background, drydown, weed cluster, or double-plant; affected pixels are
+projected into a world-frame treatment map through the camera intrinsics and the
+UAV pose; and connected affected zones are revisited by a nearest-neighbour
+planner that logs spray events. On the held-out test split the segmentation model
+reaches a mean intersection-over-union (mIoU) of $0.405$, which is reported as the
+honest, real-imagery accuracy of the system rather than the inflated in-distribution
+score of an earlier synthetic prototype. The perception output is scored against a
+real, pixel-aligned ground-truth field mask, so that affected-zone recall, coverage,
+false-alarm rate, and detection-to-treatment latency measure the controllers on a
+genuine detection task. On the agricultural coverage (lawnmower) trajectory, PID,
+MPC, and SMC detect every affected zone (recall $1.00$) at $88$--$100\,\%$ coverage,
+while LQR and $H_\infty$ leave large gaps and miss half of the affected zones
+(recall $0.50$). On the circular stress trajectory every controller detects all
+zones, so the discriminating metrics become coverage ($32\%$ for LQR up to $99.5\%$
+for MPC) and false-alarm rate. A $10$-seed Monte Carlo campaign with randomized
+wind, initial conditions, and sensor noise confirms the ranking is statistically
+stable: PID and SMC are the most reliable (tight confidence intervals, perfect
+recall), LQR and $H_\infty$ are the weakest and most variable, and MPC attains the
+highest coverage but a more variable recall under stress. The study demonstrates
+that high survey coverage does not by itself guarantee treatment success, and that
+controller choice materially affects the outcome of the full perception-to-action
+pipeline.
+
+\noindent\textbf{Keywords:} agricultural UAV, precision agriculture, semantic
+segmentation, U-Net, Agriculture-Vision, treatment mapping, perception-aware
+control, PID, LQR, $H_\infty$, MPC, sliding mode control.
+
+\clearpage
+
+\section*{Nomenclature}
+\addcontentsline{toc}{section}{NOMENCLATURE}
+
+\noindent\textbf{Symbols}
+\begin{tabbing}
+\hspace{3.2cm}\=\hspace{10cm}\kill
+$p=[x,y,z]^{\top}$   \> UAV position in the world (field) frame, m \\
+$R\in SO(3)$         \> Body-to-world rotation matrix \\
+$v$                  \> UAV linear velocity in the world frame, m/s \\
+$\omega$             \> Body angular velocity, rad/s \\
+$\phi,\theta,\psi$   \> Roll, pitch, yaw Euler angles, rad \\
+$q$                  \> Attitude quaternion, $q=[w,x,y,z]^{\top}$ \\
+$m,\,g$              \> Vehicle mass (kg), gravitational acceleration (m/s$^2$) \\
+$J$                  \> Body-frame inertia tensor, kg$\cdot$m$^2$ \\
+$f,\,\tau$           \> Total thrust (N), body torque vector (N$\cdot$m) \\
+$e_p,\,e_v,\,e_R,\,e_\omega$ \> Position, velocity, attitude, angular-rate errors \\
+$\Delta t,\,T_{\mathrm{sim}}$ \> Integration step (s), mission horizon (s) \\
+$K$                  \> Camera intrinsic matrix \\
+$(u,v)$              \> Pixel coordinates in the captured image \\
+$H,W$                \> Field length and width, $15\times10$ m \\
+$c_{k}$              \> Semantic class of a pixel, $k\in\{0,1,2,3\}$ \\
+$\ell(\cdot)$        \> Bayesian log-odds treatment-map accumulator \\
+$r$                  \> Treatment-map cell resolution, $0.25$ m \\
+$\rho$               \> Spray radius, m \\
+$t_{d}$              \> Spray dwell time, s \\
+$t_{s}$              \> Spray settling margin, s \\
+$\mathrm{mIoU}$      \> Mean intersection-over-union over present classes \\
+$R_{\mathrm{aff}}$   \> Affected-zone recall (detected / present) \\
+$C$                  \> Coverage of the field footprint, \% \\
+$F$                  \> False-alarm rate, m$^{-2}$ \\
+$L$                  \> Detection-to-treatment latency, s \\
+\end{tabbing}
+
+\noindent\textbf{Acronyms}
+\begin{tabbing}
+\hspace{3.2cm}\=\hspace{10cm}\kill
+UAV     \> Unmanned Aerial Vehicle \\
+CNN     \> Convolutional Neural Network \\
+IoU     \> Intersection over Union \\
+mIoU    \> Mean Intersection over Union \\
+ONNX    \> Open Neural Network Exchange \\
+GT      \> Ground Truth \\
+FPS     \> Frames per Second \\
+PID     \> Proportional--Integral--Derivative \\
+LQR     \> Linear Quadratic Regulator \\
+$H_\infty$ \> H-infinity robust control \\
+MPC     \> Model Predictive Control \\
+SMC     \> Sliding Mode Control \\
+MC      \> Monte Carlo \\
+AV      \> Agriculture-Vision (CVPR-2020 dataset) \\
+RK4     \> Fourth-order Runge--Kutta integration \\
+SO(3)   \> Special Orthogonal group, rotation matrices \\
+QP      \> Quadratic Program \\
+ARE     \> Algebraic Riccati Equation \\
+\end{tabbing}
+
+\clearpage
+
+\section*{Introduction}
+\addcontentsline{toc}{section}{INTRODUCTION}
+This report extends a comparative study of five trajectory-tracking controllers
+for an agricultural quadrotor UAV -- PID, LQR, $H_\infty$, MPC, and SMC -- with a
+closed-loop perception and decision layer that turns the flight into a useful
+agricultural mission. In the baseline study the controllers were judged only by
+how accurately they followed a reference path. Here they are judged by how well the
+whole vehicle performs the task of \emph{finding} crop problems from the air and
+\emph{planning treatment} for them, because a controller that cannot hold its survey
+lines will fail to image parts of the field, and problems that are never imaged can
+never be treated. The perception layer consists of a simulated downward camera, a
+convolutional segmentation network trained on real aerial farmland imagery, a
+projection from image pixels to field coordinates, a probabilistic treatment map,
+and a revisit-and-spray planner. The remainder of the report is organized as
+follows. Section~\ref{sec:motivation} states the motivation, Section~\ref{sec:related}
+reviews related work, and Section~\ref{sec:problem} defines the research problem: the
+shared quadrotor platform and its nonlinear dynamics, the constraint and uncertainty
+sets, the formulations of the five controllers under evaluation, and the task-level
+evaluation metrics. Section~\ref{sec:dl} describes the deep-learning segmentation model
+and its accuracy, Section~\ref{sec:pipeline} describes the perception-to-action
+pipeline, and Section~\ref{sec:results} reports the simulation results, including the
+five-controller comparison and the Monte Carlo campaign. Section~\ref{sec:discussion} discusses the findings,
+Section~\ref{sec:limitations} states the limitations and future work, and
+Section~\ref{sec:conclusion} concludes.
+
+\clearpage
+
+\section{Motivation}\label{sec:motivation}
+
+\subsection{Scientific Significance}
+Autonomous agricultural spraying is a joint perception-and-control problem, yet the
+two halves are usually studied separately. Control papers optimize tracking error
+against a given reference; perception papers optimize segmentation accuracy on fixed
+image datasets. In a real mission the two are coupled: the controller decides
+\emph{which} parts of the field the camera ever sees, and the perception model
+decides \emph{what} is done about them. A controller that tracks a coverage path
+poorly does not merely produce a larger root-mean-square error -- it produces blind
+spots in the treatment map, missed infestations, and wasted spray on false
+positives. Studying the two together, on the same simulated vehicle and the same
+real imagery, exposes trade-offs that neither field can see alone and provides a
+more faithful benchmark for controller selection in precision agriculture.
+
+\subsection{Practical Significance (Agricultural UAV Missions)}
+Precision spraying aims to apply agro-chemicals only where crop stress, weeds, or
+planting anomalies actually occur, reducing cost and environmental load relative to
+blanket spraying. This requires the UAV to survey a field, detect affected regions
+from the air, and revisit them for targeted treatment. The value of the mission is
+therefore measured not by tracking error but by task-level quantities: what fraction
+of affected zones are detected (recall), how much of the field is imaged (coverage),
+how many false detections trigger unnecessary spray (false-alarm rate), and how long
+elapses between detecting a problem and treating it (latency). This report evaluates
+the five controllers directly on these quantities.
+
+\subsection{Open Problems and Challenges}
+Three challenges motivate the present work. First, segmentation models trained on
+synthetic or in-distribution imagery report optimistic accuracy that does not
+transfer to real fields; an honest benchmark must use real imagery and a real
+ground truth. Second, the perception output must be scored against the \emph{same}
+field the vehicle actually flew over, otherwise the detection metrics are
+meaningless. Third, high survey coverage is often assumed to imply mission success,
+but coverage and treatment precision are different requirements and may rank the
+controllers differently. The framework in this report addresses all three.
+
+\section{Related Work}\label{sec:related}
+Trajectory-tracking control of quadrotors has been studied extensively. Mahony,
+Kumar, and Corke review multirotor modelling and control fundamentals~\cite{mahony2012},
+Lee, Leok, and McClamroch derive a geometric tracking controller on $SE(3)$ that is now
+a standard nonlinear benchmark~\cite{lee2010}, and Bouabdallah and Siegwart established
+an early linear-control comparison on a real platform~\cite{bouabdallah2007}. The five
+control families evaluated here rest on classical foundations: optimal linear-quadratic
+design~\cite{anderson2007}, $H_\infty$ robust control~\cite{zhou1996}, model predictive
+control~\cite{rawlings2017}, and sliding-mode control~\cite{utkin1992}. The companion
+controls study to this report compares these five families on agricultural and circular
+trajectories under nominal and disturbed conditions; the present work reuses that exact
+platform and adds the perception layer on top of it.
+
+Semantic segmentation of imagery advanced rapidly with the U-Net encoder--decoder
+architecture~\cite{ronneberger2015} and deep residual encoders~\cite{he2016}, which
+together form the ResNet-18 U-Net used here. For aerial farmland specifically, the
+\emph{Agriculture-Vision} CVPR-2020 dataset provides large-scale, expert-annotated
+imagery of field anomalies such as drydown, weed clusters, and double-plant
+regions~\cite{chiu2020}. Precision-agriculture UAV reviews identify accurate
+low-altitude tracking under payload and wind variation as the dominant constraint for
+spraying missions~\cite{huang2013,zhang2021}, yet they typically treat coverage-path
+planning, perception, and low-level control as independent modules.
+
+The contribution here is to close the loop in simulation: to run a real segmentation
+model inside the flight simulation of each controller and to score the resulting
+treatment decisions against a real ground-truth field, so that the control and
+perception layers are evaluated jointly rather than in isolation.
+
+\section{Research Problem Statement}\label{sec:problem}
+
+\subsection{Objectives}
+The objectives of this study are: (i) to train and honestly evaluate a real-data
+crop-anomaly segmentation model suitable for on-board deployment; (ii) to integrate
+that model into the flight simulation of five controllers through a camera model, a
+pixel-to-world projection, and a probabilistic treatment map; (iii) to plan and log
+targeted spraying over the detected zones; and (iv) to compare the five controllers
+on task-level metrics -- affected-zone recall, coverage, false-alarm rate, and
+detection-to-treatment latency -- under a single deterministic run and under a
+$10$-seed Monte Carlo campaign.
+
+\subsection{System Overview}
+The simulated system couples six stages in a closed loop, executed once per camera
+frame:
+\begin{enumerate}[label=(\arabic*)]
+    \item a controller (one of PID, LQR, $H_\infty$, MPC, SMC) flies the quadrotor
+          along a reference survey path;
+    \item a downward-facing pinhole RGB camera captures the field below the vehicle
+          at $5$ frames per second;
+    \item the U-Net segmentation model labels every captured pixel with one of the
+          four Agriculture-Vision classes;
+    \item affected pixels are projected from image coordinates to the world field
+          plane using the camera intrinsics $K$ and the UAV pose $(p,R)$;
+    \item a Bayesian log-odds treatment map accumulates the projected detections
+          into a field-frame grid of $0.25$ m cells;
+    \item after coverage, a revisit planner orders the confirmed affected zones and
+          a spray executor logs a treatment event for each serviced zone.
+\end{enumerate}
+Each controller tracks a time-parameterized reference produced by the survey and revisit
+planners. The quadrotor state used throughout is
+\begin{equation}
+    \mathbf{x} = \big[\mathbf{p}^{\top},\,\mathbf{v}^{\top},\,\mathbf{q}^{\top},\,\bm{\omega}^{\top}\big]^{\top} \in \mathbb{R}^{13},
+    \label{eq:state}
+\end{equation}
+comprising position $\mathbf{p}$, linear velocity $\mathbf{v}$, unit attitude quaternion
+$\mathbf{q}$, and body angular rate $\bm{\omega}$. The perception layer is evaluated on
+top of whichever controller generates the tracking command $\mathbf{x}\!\to\!\mathbf{x}_{\mathrm{ref}}$,
+which this study treats as an interchangeable black box, so that the task-level metrics
+reflect the controller's effect on the mission rather than its internal control law.
+
+\subsection{Quadrotor Platform and Dynamics}
+The perception layer is evaluated on top of the same agricultural quadrotor platform and
+the same five controllers as the companion controls study, summarized here so that this
+report is self-contained. The vehicle is a rigid body with six degrees of freedom and
+four independent inputs, and is therefore an underactuated nonlinear system. Its state is
+the position $\mathbf{p}\in\mathbb{R}^3$, linear velocity $\mathbf{v}\in\mathbb{R}^3$,
+attitude $R\in SO(3)$, and body angular rate $\bm{\omega}\in\mathbb{R}^3$ of
+Eq.~\eqref{eq:state}; the commanded input is the total thrust $f$ and the body torque
+$\bm{\tau}$,
+\begin{equation}
+    \mathbf{u} = [\,f,\ \tau_x,\ \tau_y,\ \tau_z\,]^{\top}. \label{eq:input}
+\end{equation}
+With $\mathbf{e}_3=[0,0,1]^{\top}$ and gravity $\mathbf{g}$, the continuous-time dynamics
+are
+\begin{align}
+    \dot{\mathbf{p}} &= \mathbf{v}, &
+    \dot{\mathbf{v}} &= \mathbf{g} + \tfrac{1}{m}\!\left(fR\mathbf{e}_3 + \mathbf{d}_f\right), \\
+    \dot{R} &= R\,\hat{\bm{\omega}}, &
+    J\dot{\bm{\omega}} &= \bm{\tau} - \bm{\omega}\times(J\bm{\omega}),
+    \label{eq:dyn}
+\end{align}
+where $\hat{\bm{\omega}}$ is the skew-symmetric matrix of $\bm{\omega}$ and
+$\mathbf{d}_f$ is the external disturbance force, primarily wind. Translational motion is
+actuated only through attitude, so a controller that tracks its survey lines poorly does
+not merely accumulate tracking error -- it leaves parts of the field unimaged and hence
+untreatable, which is precisely the coupling this report measures.
+
+The dynamics are advanced at $\Delta t = 0.01$~s ($100$~Hz) by a fourth-order
+Runge--Kutta step for $\mathbf{v}$ and $\bm{\omega}$ and a semi-implicit Euler update for
+the position, $\mathbf{p}_{k+1} = \mathbf{p}_k + \mathbf{v}_{k+1}\Delta t$. To preserve the geometry of $SO(3)$, the attitude is propagated by the
+matrix exponential of the midpoint angular velocity (Rodrigues formula) and re-projected
+onto $SO(3)$ by singular-value decomposition,
+\begin{equation}
+    R_{k+1} = R_k\,\exp\!\big(\hat{\bar{\bm{\omega}}}\,\Delta t\big), \qquad
+    R \leftarrow UV^{\top}\ \text{with}\ R = U\Sigma V^{\top}. \label{eq:so3}
+\end{equation}
+The nominal parameters, held fixed across all five controllers, are mass
+$m = 1.3$--$1.5$~kg (empty to loaded), arm length $0.225$~m, inertia
+$J = \mathrm{diag}(0.0123,0.0123,0.0224)$~kg$\cdot$m$^2$, per-axis torque limit
+$\tau_{\max}=0.5$~N$\cdot$m, over a $15\times10$~m field flown at a spray altitude of
+$4$~m and a nominal speed of $\approx 1.2$~m/s. Because the plant is identical for every
+controller, any performance difference is attributable to the control law rather than to
+the model.
+
+\subsection{Constraints and Uncertainty}
+The control inputs are hard-limited to the propulsion capability in every control cycle,
+\begin{equation}
+    0 \le f \le f_{\max}, \qquad |\tau_i| \le \tau_{\max}, \quad i\in\{x,y,z\}. \label{eq:sat}
+\end{equation}
+The deterministic runs of Section~\ref{sec:results} use the nominal parameters and a
+fixed wind realization. The Monte Carlo campaign repeats both missions over $n=10$
+independent seeds; each seed randomizes (i) the wind disturbance $\mathbf{d}_f$, (ii) the
+vehicle initial conditions, and (iii) the camera/render and sensor noise seen by the
+perception stack. Aggregates are reported as mean $\pm$ a $95\,\%$ confidence interval,
+computed as $1.96\,\sigma/\sqrt{n}$ with non-finite runs excluded. This separates a
+controller's genuine sensitivity to disturbance and noise from the outcome of a single
+favourable seed.
+
+\subsection{The Five Controllers Under Evaluation}\label{sec:controllers}
+All five controllers share the state/input interface of
+Eqs.~\eqref{eq:state}--\eqref{eq:input} and the actuator limits of Eq.~\eqref{eq:sat};
+they differ only in the feedback law $\mathbf{u}=\mathcal{C}_j(\mathbf{x},\mathbf{x}_{\mathrm{ref}})$.
+For the linear designs the working state uses the Euler-angle vector
+$\bm{\eta}=[\phi,\theta,\psi]^{\top}$. When trajectory feedforward is enabled, a reference
+acceleration $\mathbf{a}_{\mathrm{ff}}$ is mapped to a nominal thrust and tilt by
+differential flatness, $\mathbf{F}_{\mathrm{ff}} = m(\mathbf{a}_{\mathrm{ff}} + g\mathbf{e}_3)$,
+$f_{\mathrm{ff}} = \lVert\mathbf{F}_{\mathrm{ff}}\rVert$,
+$\mathbf{b}_{3,d} = \mathbf{F}_{\mathrm{ff}}/\lVert\mathbf{F}_{\mathrm{ff}}\rVert$.
+
+\subsubsection{PID (cascaded)}
+An outer translational loop forms the desired force and an inner attitude loop forms the
+torque,
+\begin{equation}
+    \begin{aligned}
+        \mathbf{F}_{\mathrm{des}} &= m(g\mathbf{e}_3 + \mathbf{a}_{\mathrm{ff}})
+            + K_p^{p}\!\odot\mathbf{e}_p + K_i^{p}\!\odot\!\!\int\!\mathbf{e}_p\,dt
+            + K_d^{p}\!\odot\bar{\mathbf{e}}_v, \\
+        \bm{\tau} &= K_p^{R}\!\odot\mathbf{e}_R + K_i^{R}\!\odot\!\!\int\!\mathbf{e}_R\,dt
+            + K_d^{R}\!\odot\bar{\mathbf{e}}_\omega,
+    \end{aligned}
+    \label{eq:pid}
+\end{equation}
+with thrust $f=\mathrm{sat}(\lVert\mathbf{F}_{\mathrm{des}}\rVert, 0.2mg, 1.8mg)$, the
+attitude error $\mathbf{e}_R$ formed from the cross product of the current and desired
+thrust directions, anti-windup on the integrators, and a $20$~rad/s low-pass filter on
+the derivative channels ($\bar{\mathbf{e}}_v,\bar{\mathbf{e}}_\omega$). The implemented
+gains are $K_p^{p}=[3.3,3.3,6.5]$, $K_i^{p}=[0.12,0.12,0.25]$, $K_d^{p}=[3.6,3.6,5.8]$,
+$K_p^{R}=[7,7,3.5]$, $K_i^{R}=[0.05,0.05,0.02]$, $K_d^{R}=[3,3,1.8]$. PID is simple and
+computationally cheap but tuning-sensitive and less systematic about coupling and
+disturbances.
+
+\subsubsection{LQR}
+A hover/trajectory linearization gives the $12$-state model
+$\dot{\mathbf{x}}_\ell = A_c\mathbf{x}_\ell + B_c\mathbf{u}$ with the dominant small-angle
+coupling $\dot v_x = g\theta$, $\dot v_y = -g\phi$. The control law adds feedforward
+thrust, full-state feedback, and altitude integral action, $\mathbf{u} =
+[f_{\mathrm{ff}},0,0,0]^{\top} + K_{\mathrm{LQR}}\mathbf{e} + [mK_{I,z}\!\int e_z\,dt,0,0,0]^{\top}$,
+where $K_{\mathrm{LQR}}$ solves the Riccati problem
+$\min\int(\mathbf{x}_\ell^{\top}Q\mathbf{x}_\ell + \mathbf{u}^{\top}R\mathbf{u})\,dt$ with
+$Q=\mathrm{diag}(2,2,5,\,8,8,12,\,5,5,2,\,3,3,2)$, $R=\mathrm{diag}(2,80,80,100)$, and
+altitude integral gain $K_I^z=0.8$. LQR is systematic and smooth but relies on the
+linearization and degrades far from hover.
+
+\subsubsection{$H_\infty$}
+The same linear model is augmented with a disturbance input,
+$\dot{\mathbf{x}}_\ell = A_c\mathbf{x}_\ell + B_c\mathbf{u} + B_w\mathbf{w}$, and the
+state-feedback gain minimizes the worst-case disturbance-to-performance gain
+$\lVert T_{w\to z}\rVert_\infty < \gamma$ through a bounded-real ARE iteration (with an
+LQR fallback), plus a first-order disturbance observer that corrects the velocity-error
+block. The design weights are $Q_z=\mathrm{diag}(4,4,10,\,10,10,15,\,6,6,3,\,4,4,2.5)$,
+$R_u=\mathrm{diag}(2,60,60,80)$, with $\gamma$ swept over $\{5,6,8,10,15,20\}$; in the
+companion controls study the realized closed-loop gain of this same design was certified
+a posteriori at $\lVert T_{zw}\rVert_\infty = 2.08 < 5$. $H_\infty$ targets disturbance rejection
+explicitly, at the cost of a more involved synthesis.
+
+\subsubsection{Model Predictive Control}
+MPC uses the discrete linear model
+$\mathbf{x}_{\ell,k+1}=A_d\mathbf{x}_{\ell,k}+B_d\mathbf{u}_k$ over a prediction horizon
+$N=20$ and control horizon $N_u=15$, minimizing
+\begin{equation}
+    \min_{\Delta U}\;
+    \begin{aligned}[t]
+        &\sum_{i=0}^{N-1}\big(\mathbf{x}_{k+i}-\mathbf{x}^{\mathrm{ref}}_{k+i}\big)^{\top}Q\big(\mathbf{x}_{k+i}-\mathbf{x}^{\mathrm{ref}}_{k+i}\big) \\
+        &\quad + \sum_{i=0}^{N-1}\Delta\mathbf{u}_{k+i}^{\top}R\,\Delta\mathbf{u}_{k+i}
+            + \big(\mathbf{x}_{k+N}-\mathbf{x}^{\mathrm{ref}}_{k+N}\big)^{\top}Q_N\big(\mathbf{x}_{k+N}-\mathbf{x}^{\mathrm{ref}}_{k+N}\big),
+    \end{aligned}
+    \label{eq:mpc}
+\end{equation}
+subject to the model and the input box $u_{\min}\le\Delta u\le u_{\max}$ ($\pm 0.7mg$ on
+thrust, $\pm\tau_{\max}$ on torque). The batch QP is solved in closed form
+$\Delta U^{\ast}=-H_{\mathrm{qp}}^{-1}f$ and projected onto the box, and only the first
+move is applied. The weights are
+\begin{equation*}
+    Q=\mathrm{diag}(80,80,120,\,30,30,45,\,25,25,8,\,5,5,3),\quad
+    R=\mathrm{diag}(0.04,0.18,0.18,0.5),\quad Q_N=20Q.
+\end{equation*}
+MPC anticipates the reference and respects the constraints directly, but it is the most
+computationally demanding law.
+
+\subsubsection{Sliding Mode Control}
+SMC defines translational and rotational sliding surfaces
+$\mathbf{s}_p=\mathbf{e}_v+\Lambda_p\mathbf{e}_p$ and
+$\mathbf{s}_R=\mathbf{e}_\omega+\Lambda_R\mathbf{e}_R$, and commands
+\begin{equation}
+    \begin{aligned}
+        \mathbf{a}_{\mathrm{cmd}} &= \mathbf{a}_{\mathrm{ff}} + \Lambda_p\mathbf{e}_v
+            + K_p\,\mathrm{sat}\!\big(\mathbf{s}_p/\phi_p\big), \\
+        \bm{\tau} &= J\big(\Lambda_R\mathbf{e}_\omega + K_R\,\mathrm{sat}(\mathbf{s}_R/\phi_R)\big)
+            + \bm{\omega}\times(J\bm{\omega}),
+    \end{aligned}
+    \label{eq:smc}
+\end{equation}
+with the desired force $\mathbf{F}_{\mathrm{des}}=m(g\mathbf{e}_3+\mathbf{a}_{\mathrm{cmd}})$
+and a boundary-layer $\mathrm{sat}(\cdot)$ that replaces the discontinuous sign to reduce
+chattering. The surface and gain parameters are $\Lambda_p=\mathrm{diag}(1.6,1.6,2.1)$,
+$\Lambda_R=\mathrm{diag}(4,4,2.8)$, $K_p=\mathrm{diag}(1.4,1.4,2.2)$,
+$K_R=\mathrm{diag}(3,3,1.8)$, $\phi_p=0.75$, $\phi_R=0.35$. SMC is robust to matched
+disturbances but produces more aggressive actuation than the smooth linear laws.
+
+\subsection{Field and Ground Truth}
+The vehicle flies over a $15\times10$ m field whose texture and pixel-aligned
+ground-truth class mask are both generated from the same real Agriculture-Vision
+image patches, so that every affected pixel in the mask corresponds to a real
+anomaly in the imagery the camera sees. The field is deliberately built to a
+realistic sparsity of $23.1\,\%$ affected area; a denser field would saturate recall
+and hide the differences between controllers, while the natural class balance of the
+dataset (about $18\,\%$ affected) is preserved in spirit. All detection metrics in
+Section~\ref{sec:results} are computed against this real mask.
+
+\subsection{Evaluation Metrics}
+The task-level metrics used throughout are defined as follows.
+\begin{itemize}
+    \item \textbf{Affected-zone recall} $R_{\mathrm{aff}}$: the fraction of
+          connected ground-truth affected zones that overlap at least one confidently
+          detected treatment cell. This is the primary mission metric, because a
+          missed infestation is more costly than a false alarm.
+    \item \textbf{Coverage} $C$: the fraction of the field imaged by the camera
+          footprint over the survey, in percent.
+    \item \textbf{False-alarm rate} $F$: the area of detected affected cells that do
+          not correspond to real anomalies, per square metre of field. It must be
+          read jointly with coverage, since a vehicle that images more of the field
+          also accumulates more false positives.
+    \item \textbf{Detection-to-treatment latency} $L$: the mean time between first
+          detecting a zone and logging its spray event, in seconds.
+    \item \textbf{Segmentation mIoU}: the mean intersection-over-union of the network
+          over the present classes, used to report model accuracy independently of
+          the flight.
+\end{itemize}
+Formally, with per-class true positives, false positives, and false negatives
+$\mathrm{TP}_k,\mathrm{FP}_k,\mathrm{FN}_k$ (counted in pixels for the network and in map
+cells for the flight), the segmentation and task metrics are
+\begin{align}
+    \mathrm{IoU}_k &= \frac{\mathrm{TP}_k}{\mathrm{TP}_k+\mathrm{FP}_k+\mathrm{FN}_k},
+        & \mathrm{mIoU} &= \frac{1}{|\mathcal{C}|}\sum_{k\in\mathcal{C}} \mathrm{IoU}_k,
+        \label{eq:iou}\\[2pt]
+    R_{\mathrm{aff}} &= \frac{\#\{\text{GT zones hit by a confident cell}\}}{\#\{\text{GT zones}\}},
+        & F &= \frac{A_{\mathrm{FP}}}{H\,W}, \label{eq:raff}\\[2pt]
+    C &= \frac{A_{\mathrm{imaged}}}{H\,W}\times 100\%,
+        & L &= \frac{1}{|\mathcal{Z}|}\sum_{z\in\mathcal{Z}} \big(t^{\mathrm{spray}}_z - t^{\mathrm{det}}_z\big),
+        \label{eq:latency}
+\end{align}
+where $\mathcal{C}$ is the set of classes present, $A_{\mathrm{FP}}$ is the area of
+detected affected cells that overlap no real anomaly, $A_{\mathrm{imaged}}$ is the imaged
+field area, $H\,W$ is the total field area, and $\mathcal{Z}$ is the set of serviced
+zones with detection time $t^{\mathrm{det}}_z$ and spray time $t^{\mathrm{spray}}_z$.
+
+\section{Deep-Learning Segmentation Model}\label{sec:dl}
+
+\subsection{Dataset and Architecture}
+The segmentation model is a U-Net with a ResNet-18 encoder, trained on the real
+Agriculture-Vision CVPR-2020 dataset (the combined 2017, 2018, and 2019 miniscale
+releases). Four classes are used: background (class $0$) and three affected classes
+-- drydown ($1$), weed cluster ($2$), and double-plant ($3$). A balanced subset of
+$4500$ training, $900$ validation, and $900$ test patches was assembled from the
+combined release; the natural class imbalance of the dataset (background dominates
+at roughly $82\,\%$ of pixels) makes the affected classes intrinsically difficult.
+The network consumes $256\times256$ RGB tiles and is exported to ONNX for CPU
+inference inside the MATLAB flight simulation.
+
+\subsection{Training}
+The model was trained for $25$ epochs with the Adam optimizer using a resumable
+checkpointing scheme. The best validation performance (mean IoU $\approx 0.447$) was
+reached at epoch $24$. The training and validation curves are shown in
+Figure~\ref{fig:training}.
+
+\figorbox{training_curves.png}
+{Training curves of the Agriculture-Vision U-Net.}
+{Train loss, validation mean IoU, and per-class validation IoU over $25$ epochs. The
+affected classes converge more slowly than background, reflecting their small pixel
+share in the dataset.}
+{fig:training}
+
+\subsection{Held-out Test Accuracy}
+Table~\ref{tab:seg} reports the per-class accuracy on the held-out test split. The
+model reaches a mean IoU of $0.405$. This value is far below the $\approx 0.95$ that
+an earlier synthetic prototype achieved on its own procedural generator; that
+prototype was trained and tested on the same synthetic process and therefore does
+not measure field accuracy. It has been removed from the project, and \emph{all}
+accuracy claims in this report are the real Agriculture-Vision numbers below.
+
+\begin{table}[H]
+    \centering
+    \caption{U-Net semantic segmentation accuracy on the held-out Agriculture-Vision
+    test split (mean IoU $=0.405$).}
+    \label{tab:seg}
+    \begin{tabular}{lcccc}
+        \toprule
+        \textbf{Class} & \textbf{IoU} & \textbf{Precision} & \textbf{Recall} & \textbf{Affected} \\
+        \midrule
+        background      & 0.812 & 0.896 & 0.896 & no  \\
+        drydown         & 0.422 & 0.619 & 0.570 & yes \\
+        weed\_cluster   & 0.206 & 0.338 & 0.346 & yes \\
+        double\_plant   & 0.180 & 0.300 & 0.310 & yes \\
+        \midrule
+        \textbf{mean}   & \textbf{0.405} & -- & -- & -- \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+Background is segmented well (IoU $0.812$). Among the affected classes drydown is the
+strongest (IoU $0.422$, recall $0.570$), weed cluster is moderate (IoU $0.206$), and
+double-plant is the weakest (IoU $0.180$). The weakness of double-plant is expected:
+it is the rarest and most visually subtle class in the dataset, and it is flagged as
+a limitation in Section~\ref{sec:limitations}. The per-class breakdown and the
+confusion matrix are shown in Figures~\ref{fig:segbar} and~\ref{fig:segcm}.
+
+\figorbox{segmentation_per_class.png}
+{Per-class test accuracy of the segmentation model.}
+{Intersection-over-union, precision, and recall for the four classes on the held-out
+test split.}
+{fig:segbar}
+
+\figorbox{segmentation_confusion.png}
+{Row-normalized confusion matrix on the test split.}
+{Confusion between the four classes. Most affected-class errors are confusions with
+background, consistent with the small pixel share of the anomaly classes.}
+{fig:segcm}
+
+\subsection{Qualitative Predictions}
+Figure~\ref{fig:qual} shows representative held-out test tiles. Within each tile the
+three columns are, from left to right, the input RGB patch, the expert ground-truth
+mask, and the model prediction; affected classes are coloured as in the legend (drydown
+gold, weed cluster red, double-plant green), and background is left uncoloured. The model
+recovers the large drydown and weed-cluster regions well and localizes their boundaries,
+but it tends to over-extend the affected area on ambiguous, low-contrast patches and
+barely registers the rare double-plant class -- the same behaviour quantified by the
+per-class IoU in Table~\ref{tab:seg}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.34\textwidth]{legend.png}\\[0.5em]
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{pred_2017_6Q4R96VAF_2481-3502-2993-4014.png}
+        \caption{Drydown region (gold), well recovered.}
+    \end{subfigure}\hfill
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{pred_2018_ETZD96IZQ_6338-6180-6850-6692.png}
+        \caption{Weed cluster (red), close boundary match.}
+    \end{subfigure}
+
+    \vspace{0.7em}
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{pred_2018_T3QR4RKT1_1161-2370-1673-2882.png}
+        \caption{Weed strip along a tree row.}
+    \end{subfigure}\hfill
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{pred_2018_68XXUAVEB_2181-1137-2693-1649.png}
+        \caption{Weed plus a small double-plant (green); prediction over-extends.}
+    \end{subfigure}
+    \caption{Qualitative segmentation on held-out Agriculture-Vision test tiles.\\\small
+    Columns within each panel: input RGB (left), ground truth (middle), model prediction
+    (right). The first row shows accurate recovery of drydown and weed cluster; the
+    bottom-right panel shows a typical over-prediction on a low-contrast patch and the
+    near-invisibility of the rare double-plant class.}
+    \label{fig:qual}
+\end{figure}
+\vspace{0.3em}
+
+\section{Perception-to-Action Pipeline}\label{sec:pipeline}
+
+\subsection{Camera Model and Projection}
+A downward-facing pinhole camera with intrinsic matrix $K$ captures the field at the
+spray altitude of $4$ m and a frame rate of $5$ FPS. The intrinsics follow from the
+sensor field of view,
+\begin{equation}
+    K =
+    \begin{bmatrix}
+        f_x & 0   & c_x \\
+        0   & f_y & c_y \\
+        0   & 0   & 1
+    \end{bmatrix},
+    \qquad
+    f_x = \frac{W/2}{\tan(\theta_h/2)}, \quad
+    f_y = \frac{H_{\mathrm{px}}/2}{\tan(\theta_v/2)},
+    \label{eq:intrinsics}
+\end{equation}
+where $\theta_h,\theta_v$ are the horizontal and vertical fields of view,
+$(W,H_{\mathrm{px}})$ is the image size in pixels, and $(c_x,c_y)$ is the principal
+point. Each detected affected pixel $(u,v)$ is back-projected onto the flat field plane
+$z=0$. Writing the pixel in homogeneous form $\tilde{\mathbf{x}}=[u,v,1]^{\top}$, its
+viewing ray in the world frame is $\mathbf{r}=R\,K^{-1}\tilde{\mathbf{x}}$, and the
+intersection of that ray with the ground plane gives the world coordinate
+\begin{equation}
+    \begin{bmatrix} x \\ y \end{bmatrix}
+    = \big( \mathbf{p} + s\,\mathbf{r} \big)_{1:2},
+    \qquad
+    s = -\frac{p_z}{r_z},
+    \label{eq:backproj}
+\end{equation}
+where $\mathbf{p}=[x,y,z]^{\top}$ and $R$ are the UAV position and body-to-world
+rotation and $r_z$ is the vertical component of $\mathbf{r}$. This maps every affected
+pixel into the $15\times10$ m field. The class-identifier convention is kept symmetric
+across the Python model (zero-based ids) and the MATLAB pipeline (one-based ids), so
+that the affected classes drydown, weed cluster, and double-plant map consistently to
+the map-and-spray set.
+
+\subsection{Treatment Map}
+Projected detections are accumulated into a field-frame grid of $0.25$ m cells using a
+clamped log-odds accumulator. Each time a cell $c$ is observed as affected by a confident
+detection, its log-odds are incremented and clamped to a fixed range,
+\begin{equation}
+    \ell_t(c) = \mathrm{clip}\!\big(\ell_{t-1}(c) + \ell_{\mathrm{hit}},\; \ell_{\min},\, \ell_{\max}\big),
+    \label{eq:logodds}
+\end{equation}
+with $\ell_{\mathrm{hit}}=+0.85$ and $[\ell_{\min},\ell_{\max}]=[-10,10]$; the
+implementation accumulates positive evidence only (a negative decrement
+$\ell_{\mathrm{miss}}=-0.20$ is reserved in the configuration for future
+negative-evidence updates but is not applied in the current pipeline). The posterior
+probability that a cell is affected is recovered from its log-odds by the logistic map
+\begin{equation}
+    P(c\ \text{affected}) = \sigma\big(\ell_t(c)\big) = \frac{1}{1+e^{-\ell_t(c)}},
+    \label{eq:sigmoid}
+\end{equation}
+and a cell enters a treatment zone when $P \ge \tau_p = 0.60$. Since
+$\sigma(\ell_{\mathrm{hit}}) = 0.70$, a single confident observation is sufficient to
+confirm a cell; the robustness of the map against isolated per-pixel errors therefore
+comes from the spatial stage rather than from per-cell temporal integration: connected
+affected cells are grouped into zones by connected-component analysis, and only components
+of area at least $0.50$ m$^2$ (eight cells) become treatment zones. Scoring the treatment
+map against the real ground-truth mask yields the affected-zone recall and false-alarm
+rate used in Section~\ref{sec:results}.
+
+\subsection{Revisit and Spray Planning}
+After the coverage survey, the confirmed zones are ordered by a nearest-neighbour
+heuristic starting from the vehicle's final survey position, and the revisit
+reference holds over each zone long enough for the controller to settle within the
+spray radius before a spray event is logged. The spray executor is opportunistic:
+it services every zone the vehicle passes within the spray radius of, so that a
+single hard-to-reach zone does not block the remaining zones. This design replaced
+an earlier strictly-sequential executor whose zero settling margin caused
+controllers that overshoot on the aggressive circular path to leave zones unsprayed;
+the current executor services every detected zone for all five controllers.
+Figure~\ref{fig:route} shows an example revisit tour produced by this planner over the
+confirmed zones of the real field.
+
+\figorbox{revisit_route.png}
+{Planned revisit tour over the detected affected zones.}
+{Nearest-neighbour ordering of the confirmed treatment zones (yellow, numbered in
+service order) overlaid on the stitched real field. The tour starts from the vehicle's
+final survey position; the opportunistic spray executor then services every zone the
+vehicle passes within the spray radius of.}
+{fig:route}
+
+\section{Simulation Results}\label{sec:results}
+
+\subsection{Real-field Detection}
+As a first check that the wired pipeline detects real anomalies, a lawnmower survey
+was flown over the real field and the treatment map scored against the ground-truth
+mask. The survey imaged $95\,\%$ of the field and recalled every affected zone
+($R_{\mathrm{aff}}=1.00$, zone-overlap recall) at a false-alarm rate of
+$0.057$ m$^{-2}$, at an on-board inference cost of roughly $80$--$150$ ms per frame
+on CPU. The whole-field flyover localizes twelve affected zones -- one drydown patch and
+eleven weed clusters -- whose nearest-neighbour revisit tour is shown in
+Figure~\ref{fig:route}. Figure~\ref{fig:flyover} compares the real RGB field, the
+pixel-aligned ground-truth mask, and the model's whole-field prediction. On the whole stitched field
+the fused segmentation reaches mIoU $0.31$ with affected-class precision $0.57$;
+these whole-field numbers are lower than the per-patch test mIoU of $0.405$ because
+the moving survey windows straddle patch boundaries and see partial, off-nadir views
+of each region. This gap is the expected simulation-to-field effect and is reported
+openly rather than hidden.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{field_rgb.png}
+        \caption{Real RGB field.}
+    \end{subfigure}\hfill
+    \begin{subfigure}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{field_groundtruth.png}
+        \caption{Ground-truth mask.}
+    \end{subfigure}\hfill
+    \begin{subfigure}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{field_prediction.png}
+        \caption{Model prediction.}
+    \end{subfigure}
+    \caption{Whole-field perception over the real $15\times10$ m field.\\\small The real
+    RGB orthomosaic (left), the pixel-aligned ground-truth affected mask (middle), and the
+    treatment-map prediction accumulated over the lawnmower survey (right). Affected cells
+    are coloured; background is left uncoloured.}
+    \label{fig:flyover}
+\end{figure}
+\vspace{0.3em}
+
+\subsection{Agricultural Trajectory (Coverage Path)}
+Table~\ref{tab:lawn} reports the five-controller comparison on the agricultural
+lawnmower survey, scored against the real ground truth, for a single deterministic
+run.
+
+\begin{table}[H]
+    \centering
+    \caption{Controller performance on the agricultural lawnmower survey
+    (single deterministic run, real ground truth).}
+    \label{tab:lawn}
+    \begin{tabular}{lcccc}
+        \toprule
+        \textbf{Controller} & \textbf{Coverage [\%]} & \textbf{Recall} & \textbf{False alarm [m$^{-2}$]} & \textbf{Latency [s]} \\
+        \midrule
+        PID  & 100.0 & 1.00 & 0.137 & 104.7 \\
+        LQR  & 56.4  & 0.50 & 0.147 & 102.5 \\
+        Hinf & 62.4  & 0.50 & 0.105 & 91.1  \\
+        MPC  & 88.2  & 1.00 & 0.083 & 96.6  \\
+        SMC  & 100.0 & 1.00 & 0.123 & 101.9 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+On the coverage mission the controllers separate clearly on the primary metric. PID,
+MPC, and SMC track the survey lines tightly enough to image $88$--$100\,\%$ of the
+field and detect \emph{every} affected zone (recall $1.00$). LQR and $H_\infty$
+follow the lawnmower pattern poorly, image only $56\%$ and $62\%$ of the field, and
+consequently miss half of the affected zones (recall $0.50$). Recall tracks coverage:
+a controller that cannot follow the survey simply never images some anomalies. The
+false-alarm rate is coupled to coverage -- the high-coverage controllers accumulate
+slightly more false-positive cells -- and must be read together with coverage rather
+than as an independent quality score. Figure~\ref{fig:panel} summarizes the four
+metrics across both trajectories.
+
+\figorbox{controller_comparison_panel.png}
+{Controller comparison across trajectories (single deterministic run).}
+{Coverage, affected-zone recall, false-alarm rate, and mean latency for the five
+controllers on the lawnmower and circular trajectories.}
+{fig:panel}
+
+\subsection{Circular Trajectory}
+Table~\ref{tab:circ} reports the same comparison on the circular stress trajectory.
+
+\begin{table}[H]
+    \centering
+    \caption{Controller performance on the circular stress trajectory
+    (single deterministic run, real ground truth).}
+    \label{tab:circ}
+    \begin{tabular}{lcccc}
+        \toprule
+        \textbf{Controller} & \textbf{Coverage [\%]} & \textbf{Recall} & \textbf{False alarm [m$^{-2}$]} & \textbf{Latency [s]} \\
+        \midrule
+        PID  & 81.0 & 1.00 & 0.061 & 94.9  \\
+        LQR  & 32.1 & 1.00 & 0.280 & 145.9 \\
+        Hinf & 54.3 & 1.00 & 0.337 & 125.9 \\
+        MPC  & 99.5 & 1.00 & 0.158 & 98.4  \\
+        SMC  & 76.6 & 1.00 & 0.073 & 105.9 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+On the circular path every controller eventually images enough of the field to detect
+all affected zones (recall $1.00$), so recall no longer discriminates. The
+discriminating metrics become coverage and false-alarm rate. MPC and PID sweep the
+most field ($99.5\%$ and $81.0\%$) at moderate false-alarm rates, whereas LQR and
+$H_\infty$ collapse to $32\%$ and $54\%$ coverage and carry by far the highest
+false-alarm rates ($0.280$ and $0.337$ m$^{-2}$). With the opportunistic spray
+executor every controller now services all detected zones, so the treatment latency
+is finite for all five, ranging from $94.9$ s (PID) to $145.9$ s (LQR); the slower,
+lower-coverage controllers pay a longer latency because their revisit tours are less
+efficient.
+
+\subsection{Monte Carlo Campaign}
+To confirm that the ranking is not an artifact of a single seed, a $10$-seed Monte
+Carlo campaign was run with randomized wind, initial conditions, and camera noise.
+Table~\ref{tab:mc} reports the mean coverage and affected-zone recall with $95\,\%$
+confidence intervals.
+
+\begin{table}[H]
+    \centering
+    \caption{Monte Carlo controller statistics (mean $\pm$ $95\,\%$ CI over $10$ seeds).}
+    \label{tab:mc}
+    \begin{tabular}{llcc}
+        \toprule
+        \textbf{Trajectory} & \textbf{Controller} & \textbf{Coverage [\%]} & \textbf{Recall} \\
+        \midrule
+        agricultural & PID  & $100.0 \pm 0.0$ & $1.00 \pm 0.00$ \\
+        agricultural & LQR  & $55.5 \pm 2.5$  & $0.55 \pm 0.10$ \\
+        agricultural & Hinf & $62.4 \pm 0.3$  & $0.50 \pm 0.00$ \\
+        agricultural & MPC  & $86.6 \pm 0.6$  & $1.00 \pm 0.00$ \\
+        agricultural & SMC  & $100.0 \pm 0.0$ & $1.00 \pm 0.00$ \\
+        \midrule
+        circular & PID  & $81.8 \pm 0.3$   & $1.00 \pm 0.00$ \\
+        circular & LQR  & $31.2 \pm 6.6$   & $0.20 \pm 0.22$ \\
+        circular & Hinf & $33.9 \pm 11.0$  & $0.75 \pm 0.22$ \\
+        circular & MPC  & $90.9 \pm 4.3$   & $0.90 \pm 0.13$ \\
+        circular & SMC  & $70.3 \pm 0.8$   & $1.00 \pm 0.00$ \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+The Monte Carlo campaign confirms and sharpens the deterministic result. On the
+agricultural mission PID and SMC are perfectly reliable (coverage $100\%$, recall
+$1.00$, zero confidence interval), MPC is close behind, and LQR and $H_\infty$ are
+both weak and, in the LQR case, variable. On the circular mission the separation is
+even starker: LQR and $H_\infty$ not only lose coverage but become \emph{unreliable},
+with recall dropping to $0.20\pm0.22$ and $0.75\pm0.22$ respectively -- their wide
+confidence intervals mean the mission may or may not succeed depending on the
+disturbance realization. PID and SMC hold recall at $1.00$ with negligible spread,
+and MPC attains the highest coverage but a more variable recall ($0.90\pm0.13$) under
+stress. Figure~\ref{fig:mc} shows the campaign graphically.
+
+\figorbox{monte_carlo_panel.png}
+{Monte Carlo controller statistics ($n=10$ seeds, $95\,\%$ CI).}
+{Coverage and affected-zone recall with confidence bars for the five controllers on
+both trajectories. The strong (PID/SMC/MPC) and weak (LQR/$H_\infty$) groups are
+separated on coverage.}
+{fig:mc}
+
+\subsection{Perception Runtime}
+Per-frame ONNX inference runs at roughly $90$--$150$ ms on CPU
+(Figure~\ref{fig:runtime}), comfortably within the $5$ FPS camera budget at survey
+speed, so perception is not the bottleneck of the pipeline; the limiting factor is
+the controller's ability to track the survey path, not the cost of the vision model.
+
+\figorbox{perception_runtime.png}
+{Per-frame perception runtime.}
+{Mean and $95$th-percentile ONNX inference time per frame for the five controllers.}
+{fig:runtime}
+
+\section{Discussion}\label{sec:discussion}
+The central finding is that survey coverage and treatment success are related but
+not identical requirements, and that controller choice propagates all the way to the
+agricultural outcome. On the coverage mission the primary metric, affected-zone
+recall, separates the controllers into a strong group (PID, MPC, SMC) that detects
+every zone and a weak group (LQR, $H_\infty$) that misses half, purely because the
+weak controllers cannot hold the survey lines and therefore never image parts of the
+field. On the circular mission recall saturates and the discriminating metrics move
+to coverage and false-alarm rate, where the same weak group again trails badly. The
+Monte Carlo campaign shows this ranking is statistically robust rather than a
+single-seed accident, and it adds a reliability dimension: LQR and $H_\infty$ are not
+only worse on average but far more variable under disturbance. A second finding,
+exposed during integration, is that high coverage does not automatically produce
+successful spraying: an early strictly-sequential spray executor with no settling
+margin left zones unsprayed for controllers that overshoot on the aggressive circular
+path, which is why the executor was redesigned to be opportunistic and to allow the
+controller time to settle. The corrected executor services every detected zone for
+all five controllers, and the treatment latency then simply reflects the efficiency
+of each controller's revisit tour.
+
+\section{Limitations and Future Work}\label{sec:limitations}
+Several limitations should be stated openly. First, the segmentation accuracy is
+modest in absolute terms (test mIoU $0.405$), which is honest for real aerial
+farmland but far below the inflated scores obtainable on synthetic data; the
+double-plant class in particular is weak (IoU $0.180$ on the test split and near zero
+on the moving survey) and would benefit from more training data or a larger
+Agriculture-Vision-2021 model on a GPU. Second, the whole-field survey metrics are
+lower than the per-patch test metrics because the moving camera sees partial,
+off-nadir views; a higher frame rate or overlap-aware fusion would narrow this gap.
+Third, the camera and field models are simplified -- a flat field plane, a real
+orthomosaic texture, and idealized lighting -- so field-deployment claims require
+on-board validation flights. Fourth, the treatment latency depends on the revisit-tour
+ordering rather than on the control law alone, so it should be read as a mission-planning
+cost rather than a pure controller metric; the Monte Carlo campaign was re-run with the
+corrected opportunistic spray executor, so its latency statistics are now consistent with
+the deterministic latencies in Tables~\ref{tab:lawn} and~\ref{tab:circ}, with every seed
+servicing all detected zones (which tightens the latency confidence intervals relative to
+the earlier strictly-sequential executor). None of these limitations affect the coverage
+and recall rankings, which are the principal result.
+
+\section{Conclusion}\label{sec:conclusion}
+This report integrated a real-data crop-anomaly segmentation model into the flight
+simulation of five controllers and evaluated them jointly on a genuine
+perception-to-action task. Trained on the Agriculture-Vision CVPR-2020 dataset, the
+U-Net reaches an honest held-out test mIoU of $0.405$, and its detections are scored
+against a real, pixel-aligned field mask. On the agricultural coverage mission PID,
+MPC, and SMC detect every affected zone at high coverage, while LQR and $H_\infty$
+miss half; on the circular stress mission the same weak group collapses in coverage
+and false-alarm rate; and a $10$-seed Monte Carlo campaign confirms that PID and SMC
+are the most reliable controllers, LQR and $H_\infty$ the weakest and most variable,
+and MPC the highest-coverage but more variable option under stress. The study shows
+that a perception-aware evaluation ranks the controllers on the quantity that
+actually matters for precision agriculture -- how many crop problems are found and
+treated -- and that this ranking is driven by each controller's ability to hold its
+survey path.
+
+\begin{thebibliography}{99}
+\addcontentsline{toc}{section}{REFERENCES}
+
+\bibitem{mahony2012}
+R. Mahony, V. Kumar, and P. Corke, ``Multirotor aerial vehicles: modeling, estimation,
+and control of quadrotor,'' \emph{IEEE Robotics \& Automation Magazine}, vol.~19,
+no.~3, pp.~20--32, 2012.
+
+\bibitem{lee2010}
+T. Lee, M. Leok, and N. H. McClamroch, ``Geometric tracking control of a quadrotor UAV
+on $SE(3)$,'' in \emph{Proc. IEEE Conf. on Decision and Control (CDC)}, 2010,
+pp.~5420--5425.
+
+\bibitem{bouabdallah2007}
+S. Bouabdallah and R. Siegwart, ``Full control of a quadrotor,'' in \emph{Proc.
+IEEE/RSJ Int. Conf. on Intelligent Robots and Systems (IROS)}, 2007, pp.~153--158.
+
+\bibitem{anderson2007}
+B. D. O. Anderson and J. B. Moore, \emph{Optimal Control: Linear Quadratic Methods},
+Dover, 2007.
+
+\bibitem{zhou1996}
+K. Zhou, J. Doyle, and K. Glover, \emph{Robust and Optimal Control}, Prentice Hall,
+1996.
+
+\bibitem{rawlings2017}
+J. B. Rawlings, D. Q. Mayne, and M. Diehl, \emph{Model Predictive Control: Theory,
+Computation, and Design}, Nob Hill, 2017.
+
+\bibitem{utkin1992}
+V. I. Utkin, \emph{Sliding Modes in Control and Optimization}, Springer, 1992.
+
+\bibitem{ronneberger2015}
+O. Ronneberger, P. Fischer, and T. Brox, ``U-Net: Convolutional networks for biomedical
+image segmentation,'' in \emph{Proc. Int. Conf. on Medical Image Computing and
+Computer-Assisted Intervention (MICCAI)}, 2015, pp.~234--241.
+
+\bibitem{he2016}
+K. He, X. Zhang, S. Ren, and J. Sun, ``Deep residual learning for image recognition,''
+in \emph{Proc. IEEE Conf. on Computer Vision and Pattern Recognition (CVPR)}, 2016,
+pp.~770--778.
+
+\bibitem{chiu2020}
+M. T. Chiu et al., ``Agriculture-Vision: A large aerial image database for agricultural
+pattern analysis,'' in \emph{Proc. IEEE/CVF Conf. on Computer Vision and Pattern
+Recognition (CVPR)}, 2020, pp.~2828--2838.
+
+\bibitem{huang2013}
+Y. Huang, W. C. Hoffmann, Y. Lan, W. Wu, and B. K. Fritz, ``Development of a spray
+system for an unmanned aerial vehicle platform,'' \emph{Applied Engineering in
+Agriculture}, vol.~25, no.~6, pp.~803--809, 2013.
+
+\bibitem{zhang2021}
+Y. Zhang, D. Yuan, Y. Wei, and J. Liu, ``A review of unmanned aerial vehicle application
+in precision agriculture: concepts, tools, and techniques,'' \emph{Remote Sensing},
+vol.~13, no.~6, 1204, 2021.
+
+\end{thebibliography}
+
+\end{document}

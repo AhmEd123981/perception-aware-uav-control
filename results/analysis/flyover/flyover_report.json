@@ -1,0 +1,186 @@
+{
+  "field_patches": 16,
+  "frames_captured": 25,
+  "coverage_percent_by_class": {
+    "background": 95.21,
+    "drydown": 0.22,
+    "weed_cluster": 4.57,
+    "double_plant": 0.01
+  },
+  "num_affected_zones": 12,
+  "real_field_metrics_vs_gt": {
+    "mIoU_classes_present": 0.3127,
+    "pixel_accuracy": 0.7761,
+    "per_class_iou": {
+      "background": 0.7698,
+      "drydown": 0.0382,
+      "weed_cluster": 0.1302,
+      "double_plant": 0.0
+    },
+    "per_class_precision": {
+      "background": 0.7864,
+      "drydown": 1.0,
+      "weed_cluster": 0.5532,
+      "double_plant": 0.0
+    },
+    "per_class_recall": {
+      "background": 0.9734,
+      "drydown": 0.0382,
+      "weed_cluster": 0.1454,
+      "double_plant": null
+    },
+    "affected_binary": {
+      "precision": 0.5726,
+      "recall": 0.1189,
+      "iou": 0.1092
+    }
+  },
+  "revisit_waypoints": [
+    [
+      672,
+      969
+    ],
+    [
+      653,
+      1360
+    ],
+    [
+      201,
+      1844
+    ],
+    [
+      1251,
+      2002
+    ],
+    [
+      1320,
+      2015
+    ],
+    [
+      1365,
+      1768
+    ],
+    [
+      1343,
+      1383
+    ],
+    [
+      1813,
+      1383
+    ],
+    [
+      1981,
+      1312
+    ],
+    [
+      1312,
+      344
+    ],
+    [
+      1318,
+      260
+    ],
+    [
+      1396,
+      54
+    ]
+  ],
+  "zones": [
+    {
+      "class": "drydown",
+      "centroid": [
+        672,
+        969
+      ],
+      "area_px": 9068
+    },
+    {
+      "class": "weed_cluster",
+      "centroid": [
+        653,
+        1360
+      ],
+      "area_px": 2968
+    },
+    {
+      "class": "weed_cluster",
+      "centroid": [
+        201,
+        1844
+      ],
+      "area_px": 98520
+    },
+    {
+      "class": "weed_cluster",
+      "centroid": [
+        1251,
+        2002
+      ],
+      "area_px": 3948
+    },
+    {
+      "class": "weed_cluster",
+      "centroid": [
+        1320,
+        2015
+      ],
+      "area_px": 4792
+    },
+    {
+      "class": "weed_cluster",
+      "centroid": [
+        1365,
+        1768
+      ],
+      "area_px": 30116
+    },
+    {
+      "class": "weed_cluster",
+      "centroid": [
+        1343,
+        1383
+      ],
+      "area_px": 15020
+    },
+    {
+      "class": "weed_cluster",
+      "centroid": [
+        1813,
+        1383
+      ],
+      "area_px": 5100
+    },
+    {
+      "class": "weed_cluster",
+      "centroid": [
+        1981,
+        1312
+      ],
+      "area_px": 5276
+    },
+    {
+      "class": "weed_cluster",
+      "centroid": [
+        1312,
+        344
+      ],
+      "area_px": 4416
+    },
+    {
+      "class": "weed_cluster",
+      "centroid": [
+        1318,
+        260
+      ],
+      "area_px": 3608
+    },
+    {
+      "class": "weed_cluster",
+      "centroid": [
+        1396,
+        54
+      ],
+      "area_px": 7444
+    }
+  ]
+}

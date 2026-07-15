@@ -1,0 +1,15 @@
+Day 4 perception mapping summary
+Controller: PID_nominal_day4
+Trajectory: agricultural_lawnmower_day4
+Duration: 24.00 s
+Camera FPS: 5.00
+Captured frames: 121
+Mean inference time: 1626.35 ms
+Max inference time: 4168.26 ms
+Total affected pixels: 770105
+Total projected pixels: 770105
+Active treatment cells: 108
+Detected zones: 3
+Zone 1 centroid: [4.49, 3.01], area 2.69 m^2
+Zone 2 centroid: [5.81, 1.01], area 1.88 m^2
+Zone 3 centroid: [10.47, 1.10], area 2.19 m^2
